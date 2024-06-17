@@ -52,35 +52,32 @@ def check_for_third_level_domains(filename):
     with open("public_suffix_list.dat", "r") as latest:
         psl = PublicSuffixList(latest)
 
-    invalid = {
+    if invalid := {
         line
         for line in files[filename]
         if len(psl.privateparts(line.strip())) > 1
-    }
-    if invalid:
+    }:
         print("The following domains contain a third or lower level domain in {!r}:".format(filename))
         for line in sorted(invalid):
-            print("* {}".format(line))
+            print(f"* {line}")
         sys.exit(1)
 
 
 def check_for_non_lowercase(filename):
     lines = files[filename]
-    invalid = set(lines) - set(line.lower() for line in lines)
-    if invalid:
+    if invalid := set(lines) - {line.lower() for line in lines}:
         print("The following domains should be lowercased in {!r}:".format(filename))
         for line in sorted(invalid):
-            print("* {}".format(line))
+            print(f"* {line}")
         sys.exit(1)
 
 
 def check_for_duplicates(filename):
     lines = files[filename]
-    count = Counter(lines) - Counter(set(lines))
-    if count:
+    if count := Counter(lines) - Counter(set(lines)):
         print("The following domains appear twice in {!r}:".format(filename))
         for line in sorted(count):
-            print("* {}".format(line))
+            print(f"* {line}")
         sys.exit(1)
 
 
@@ -96,11 +93,10 @@ def check_sort_order(filename):
 def check_for_intersection(filename_a, filename_b):
     a = files[filename_a]
     b = files[filename_b]
-    intersection = set(a) & set(b)
-    if intersection:
+    if intersection := set(a) & set(b):
         print("The following domains appear in both lists:")
         for line in sorted(intersection):
-            print("* {}".format(line))
+            print(f"* {line}")
         sys.exit(1)
 
 
